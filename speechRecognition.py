@@ -1,27 +1,29 @@
 import speech_recognition as sr
 
 def recognize_speech_from_microphone():
-    # obiekt rozpozniania mowy
+    # Obiekt rozpoznawania mowy
     recognizer = sr.Recognizer()
+    
+    # Użycie mikrofonu jako źródła dźwięku
     with sr.Microphone() as source:
-        print("Powiedz coś")
+        print("Adapting microphone to enviroment...")
+        # Automat dostosujacy do halasu otoczenia
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+        print("Listening...")
+        
         try:
-            # dostosowanie poziomu hałasu otoczenia
-            recognizer.adjust_for_ambient_noise(source, duration=5)
-            print("Nasluchuję...")
+            # Nasłuchiwanie mowy do momentu ciszy
+            audio = recognizer.listen(source, timeout=5, phrase_time_limit=20)
+            print("Processing...")
 
-            # nagrywanie dzwieku
-            audio = recognizer.listen(source)
-
-            # rozpoznawanie mowy
-            print("Przetwarzanie...")
+            # Google Speech Recognition
             text = recognizer.recognize_google(audio, language="pl-PL")
-            print("Rozpoznany tekst:", text)
+            print("Recognized speech:", text)
         except sr.UnknownValueError:
-            print("Nie udało się rozpoznać mowy.")
+            print("Couldn't recognize speech.")
         except sr.RequestError as e:
-            print(f"Błąd usługi Google Speech Recognition: {e}")
+            print(f"Google Speech Recognition error: {e}")
 
-# wywolanie funkcji
+# Wywołanie funkcji
 if __name__ == "__main__":
     recognize_speech_from_microphone()
